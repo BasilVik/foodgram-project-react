@@ -5,6 +5,5 @@ router_v1 = DefaultRouter()
 
 urlpatterns = [
     path('', include(router_v1.urls)),
-    path('api/', include('djoser.urls')),
-    path('api/', include('djoser.urls.authtoken')),
+    path('', include('users.urls')),
 ]

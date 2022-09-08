@@ -1,8 +1,8 @@
-from recipes.models import Tag
-from rest_framework import mixins, viewsets
+from recipes.models import Ingredient, Tag
+from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import AllowAny
 
-from .serializers import TagSerializer
+from .serializers import IngredientSerializer, TagSerializer
 
 
 class ListRetrieveViewSet(
@@ -17,4 +17,11 @@ class TagViewSet(ListRetrieveViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
-    pagination_class = None
+
+
+class IngredientViewSet(ListRetrieveViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = (AllowAny,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('^name',)

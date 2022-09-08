@@ -38,8 +38,17 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
         )
 
 
+class TagsField(serializers.PrimaryKeyRelatedField):
+
+    def to_representation(self, value):
+        return TagSerializer(value).data
+
+
 class RecipeSerializer(serializers.ModelSerializer):
-    tags = TagSerializer()
+    tags = TagsField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
     author = UserDetailSerializer(read_only=True)
     ingredients = IngredientAmountSerializer(
         source='ingredient_amounts',

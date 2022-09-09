@@ -93,6 +93,6 @@ class UserViewSet(
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
-            {'errors': 'Вы не подписаны на этого пользователя.!'},
+            {'errors': 'Вы не подписаны на этого пользователя!'},
             status=status.HTTP_400_BAD_REQUEST
         )

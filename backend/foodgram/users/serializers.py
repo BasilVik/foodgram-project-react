@@ -1,3 +1,4 @@
+from recipes.models import Recipe
 from rest_framework import serializers
 
 from .models import Follow, User
@@ -54,3 +55,45 @@ class SetPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('new_password', 'current_password')
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    email = serializers.ReadOnlyField(source='author.email')
+    id = serializers.ReadOnlyField(source='author.id')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Follow
+        fields = '__all__'
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=('user', 'author')
+            )
+        ]
+
+    def get_is_subscribed(self, obj):
+        return Follow.objects.filter(
+            user=obj.user,
+            author=obj.author
+        ).exists()
+
+    def get_recipes(self, obj):
+        from api.serializers import RecipeShortSerializer
+        if self.context:
+            recipes_limit = self.context['request'].GET.get('recipes_limit')
+            if recipes_limit:
+                queryset = Recipe.objects.filter(
+                    author=obj.author
+                )[:int(recipes_limit)]
+        else:
+            queryset = Recipe.objects.filter(author=obj.author)
+        return RecipeShortSerializer(queryset, many=True).data
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj.author).count()

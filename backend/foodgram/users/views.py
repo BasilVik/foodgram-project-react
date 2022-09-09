@@ -1,12 +1,13 @@
 from api.pagination import PageLimitPagination
+from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .models import User
-from .serializers import (SetPasswordSerializer, UserDetailSerializer,
-                          UserSerializer)
+from .models import Follow, User
+from .serializers import (FollowSerializer, SetPasswordSerializer,
+                          UserDetailSerializer, UserSerializer)
 
 
 class UserViewSet(
@@ -43,3 +44,55 @@ class UserViewSet(
             request.user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,)
+    )
+    def subscriptions(self, request):
+        queryset = Follow.objects.filter(
+            user=request.user
+        ).select_related('author')
+        serializer = FollowSerializer(
+            self.paginate_queryset(queryset),
+            many=True,
+            context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)
+
+    @action(
+        methods=['POST', 'DELETE'],
+        detail=True,
+        permission_classes=(IsAuthenticated,)
+    )
+    def subscribe(self, request, pk):
+        author = get_object_or_404(User, id=pk)
+        if request.method == 'POST':
+            if request.user == author:
+                return Response(
+                    {'errors': 'Нельзя подписаться на самого себя!'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            subscription, created = Follow.objects.get_or_create(
+                user=request.user, author=author
+            )
+            if not created:
+                return Response(
+                    {'errors': 'Вы уже подписаны на этого пользователя!'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = FollowSerializer(subscription)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+        subscription = Follow.objects.filter(
+            user=request.user, author=author
+        )
+        if subscription:
+            subscription.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {'errors': 'Вы не подписаны на этого пользователя.!'},
+            status=status.HTTP_400_BAD_REQUEST
+        )

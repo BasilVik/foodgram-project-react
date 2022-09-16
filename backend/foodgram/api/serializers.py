@@ -34,7 +34,8 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit', 'amount')
         validators = serializers.UniqueTogetherValidator(
             queryset=IngredientAmount.objects.all(),
-            fields=('recipe', 'ingredient')
+            fields=('recipe', 'ingredient'),
+            message='В рецепте уже есть этот ингредиент!'
         )
 
 
@@ -55,8 +56,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True
     )
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_list = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField(
+        method_name='get_is_favorited'
+    )
+    is_in_shopping_list = serializers.SerializerMethodField(
+        method_name='get_is_in_shopping_list'
+    )
     image = Base64ImageField()
 
     def get_is_favorited(self, obj):
@@ -66,7 +71,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return is_in_favorite_or_shop_list(self, obj, ShoppingList)
 
     def create(self, validated_data):
-        ingredients = self.initial_data.get('ingredients')
+        ingredients = validated_data.get('ingredients')
         validate_ingredient_amounts(ingredients)
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(
@@ -82,14 +87,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        ingredients = self.initial_data.get('ingredients')
+        ingredients = validated_data.get('ingredients')
         validate_ingredient_amounts(ingredients)
-        instance.name = validated_data.get('name', instance.name)
-        instance.image = validated_data.get('image', instance.image)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get(
-            'cooking_time', instance.cooking_time
-        )
+        super().update(instance, validated_data)
         instance.tags.clear()
         instance.tags.set(validated_data.pop('tags'))
         IngredientAmount.objects.filter(recipe=instance).delete()

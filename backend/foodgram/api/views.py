@@ -2,24 +2,17 @@ from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                             ShoppingList, Tag)
-from rest_framework import filters, mixins, viewsets
+from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .filters import RecipeFilter
+from .mixins import ListRetrieveViewSet
 from .pagination import PageLimitPagination
 from .permissions import IsAuthenticatedAuthorOrReadOnly
 from .serializers import IngredientSerializer, RecipeSerializer, TagSerializer
 from .utils import create_delete_recipes_list
-
-
-class ListRetrieveViewSet(
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet
-):
-    pass
 
 
 class TagViewSet(ListRetrieveViewSet):
@@ -48,10 +41,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'PUT':
             raise MethodNotAllowed(request.method)
         return super().update(request, *args, **kwargs)
-
-    def partial_update(self, request, *args, **kwargs):
-        kwargs['partial'] = False
-        return self.update(request, *args, **kwargs)
 
     @action(
         methods=['POST', 'DELETE'],

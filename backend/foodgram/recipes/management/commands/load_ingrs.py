@@ -16,7 +16,8 @@ class Command(BaseCommand):
             'r',
             encoding='utf-8'
         ) as file:
-            reader = csv.DictReader(file)
+            fieldnames = ('name', 'measurement_unit',)
+            reader = csv.DictReader(file, fieldnames=fieldnames)
             Ingredient.objects.bulk_create(
                 Ingredient(**data) for data in reader)
         self.stdout.write(self.style.SUCCESS('Все ингридиенты загружены!'))

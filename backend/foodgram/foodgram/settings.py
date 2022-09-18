@@ -77,18 +77,23 @@ DATABASES = {
     }
 }
 
+U = 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
+MLV = 'django.contrib.auth.password_validation.MinimumLengthValidator'
+CPV = 'django.contrib.auth.password_validation.CommonPasswordValidator'
+NPV = 'django.contrib.auth.password_validation.NumericPasswordValidator'
+
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': U,
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': MLV,
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': CPV,
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': NPV,
     },
 ]
 

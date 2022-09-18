@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
+from recipes.models import Recipe
 from rest_framework import status
 from rest_framework.response import Response
-from recipes.models import Recipe
 
 
 def is_in_favorite_or_shop_list(self, obj, model):

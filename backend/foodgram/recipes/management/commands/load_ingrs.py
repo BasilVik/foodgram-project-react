@@ -9,9 +9,9 @@ class Command(BaseCommand):
     help = 'Загрузка из csv файла'
 
     def handle(self, *args, **kwargs):
-        data_path = settings.BASE_DIR
+        data_path = os.path.join(settings.BASE_DIR, "data/")
         with open(
-            f'{data_path}/data/ingredients.csv',
+            f'{data_path}ingredients.csv',
             'r',
             encoding='utf-8'
         ) as file:

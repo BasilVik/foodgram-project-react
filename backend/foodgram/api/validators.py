@@ -4,7 +4,7 @@ from rest_framework.serializers import ValidationError
 
 def validate_ingredient_amounts(ingredients):
     if not ingredients:
-        raise ValidationError('Поле ingredients обязательно для заполнения!.')
+        raise ValidationError('Поле ingredients обязательно для заполнения!')
     unique_ingridients_list = []
     for ingredient in ingredients:
         if ingredient.get('amount') is None:

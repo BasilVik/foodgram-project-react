@@ -22,6 +22,10 @@
 5) Соберите статику $ docker-compose exec web python manage.py collectstatic --no-input
 6) Для доступа к админке не забудьте создать суперюзера $ docker-compose exec web python manage.py createsuperuser.
 
+
+## Сайт:
+Сервис доступен по адресу: http://84.201.166.204/
+
 ## Авторы: 
 - [Вихляев Василий](https://github.com/BasilVik) - разработка бэкэнда и настройка деплоя. 
 - [Яндекс.Практикум](https://github.com/yandex-praktikum) - разработка фронтенда.

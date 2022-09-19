@@ -20,17 +20,13 @@ class RecipeFilter(FilterSet):
         method='filter_author'
     )
 
-    class Meta:
-        model = Recipe
-        fields = ('tags',)
-
     def filter_is_favorited(self, queryset, name, value):
         user = self.request.user
         if value and user.is_authenticated:
             return queryset.filter(favorites__user=user)
         return queryset
 
-    def filter_is_in_shopping_list(self, queryset, name, value):
+    def filter_is_in_shopping_cart(self, queryset, name, value):
         user = self.request.user
         if value and user.is_authenticated:
             return queryset.filter(shopping_cart__user=user)
@@ -40,6 +36,10 @@ class RecipeFilter(FilterSet):
         if value == 'me':
             return queryset.filter(author=self.request.user)
         return queryset.filter(author=value)
+
+    class Meta:
+        model = Recipe
+        fields = ('tags',)
 
 
 class IngredientFilter(FilterSet):

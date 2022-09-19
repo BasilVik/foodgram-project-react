@@ -1,6 +1,10 @@
 from django.db.models import BooleanField, ExpressionWrapper, Q
-from django_filters.rest_framework import (BooleanFilter, Filter, FilterSet,
-                                           ModelMultipleChoiceFilter)
+from django_filters.rest_framework import (
+  BooleanFilter,
+  Filter,
+  FilterSet,
+  ModelMultipleChoiceFilter
+)
 from recipes.models import Recipe, Tag
 
 

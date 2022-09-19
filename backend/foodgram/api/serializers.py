@@ -71,7 +71,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return is_in_favorite_or_shop_list(self, obj, ShoppingList)
 
     def create(self, validated_data):
-        ingredients = validated_data.get('ingredients')
+        ingredients = self.initial_data.get('ingredients')
         validate_ingredient_amounts(ingredients)
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(

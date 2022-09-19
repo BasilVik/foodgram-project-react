@@ -59,15 +59,15 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField(
         method_name='get_is_favorited'
     )
-    is_in_shopping_list = serializers.SerializerMethodField(
-        method_name='get_is_in_shopping_list'
+    is_in_shopping_cart = serializers.SerializerMethodField(
+        method_name='get_is_in_shopping_cart'
     )
     image = Base64ImageField()
 
     def get_is_favorited(self, obj):
         return is_in_favorite_or_shop_list(self, obj, Favorite)
 
-    def get_is_in_shopping_list(self, obj):
+    def get_is_in_shopping_cart(self, obj):
         return is_in_favorite_or_shop_list(self, obj, ShoppingList)
 
     def create(self, validated_data):

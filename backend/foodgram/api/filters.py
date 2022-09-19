@@ -1,3 +1,4 @@
+from django.db.models import BooleanField, ExpressionWrapper, Q
 from django_filters.rest_framework import (BooleanFilter, Filter, FilterSet,
                                            ModelMultipleChoiceFilter)
 from recipes.models import Recipe, Tag
@@ -39,3 +40,17 @@ class RecipeFilter(FilterSet):
         if value == 'me':
             return queryset.filter(author=self.request.user)
         return queryset.filter(author=value)
+
+
+class IngredientFilter(FilterSet):
+    name = Filter(
+        method='filter_name'
+    )
+
+    def filter_name(self, queryset, name, value):
+        data = queryset.filter(name__contains=value)
+        startswith = ExpressionWrapper(
+            Q(name__startswith=value),
+            output_field=BooleanField()
+        )
+        return data.annotate(startswith=startswith).order_by('-startswith')

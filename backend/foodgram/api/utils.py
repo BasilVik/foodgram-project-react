@@ -5,13 +5,13 @@ from rest_framework.response import Response
 
 
 def is_in_favorite_or_shop_list(self, obj, model):
-    # if (
-    #     self.context.get('request') is not None
-    #     and self.context.get('request').user.is_authenticated
-    # ):
-    #     return model.objects.filter(
-    #         user=self.context.get('request').user, recipe=obj
-    #     ).exists()
+    if (
+        self.context.get('request') is not None
+        and self.context.get('request').user.is_authenticated
+    ):
+        return model.objects.filter(
+            user=self.context.get('request').user, recipe=obj
+        ).exists()
     return False
 
 

@@ -65,7 +65,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         shop_list = {}
         ingredients = IngredientAmount.objects.filter(
-            recipe__in=request.user.shopping_list.values('recipe')
+            recipe__in=request.user.shopping_cart.values('recipe')
         ).select_related('ingredient')
 
         for obj in ingredients:
